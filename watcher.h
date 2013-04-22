@@ -16,9 +16,13 @@ private:
     QRadioButton* rawValue;
     QRadioButton* colorValue;
     QRadioButton* percentValue;
+    QPushButton* backButton;
+    nodeData* currentRoot;
 
 public slots:
     void updateWatcher(nodeData* root);
+    void updateStatus();
+    void updateBack();
 };
 
 extern nodeData* Treeroot;

@@ -12,6 +12,7 @@ public:
     int posX,posY,ID,value;
     QString picPath,name;
     QList<nodeData*> child;
+    nodeData* parent;
 };
 
 

@@ -10,6 +10,7 @@ class Item : public QObject , public QGraphicsPixmapItem
 
 public:
     Item(QPixmap pixmap, nodeData *dataRoot);
+    int width, height;
 
 private:
     nodeData* root;

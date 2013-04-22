@@ -39,6 +39,7 @@ void parseElement(nodeData* root,const QDomElement &element)
             temp = new nodeData;
             root->child.append(temp);
             parseElement(temp,child);
+            temp->parent = root;
             child = child.nextSiblingElement();
         }
         int sum = 0;
@@ -114,6 +115,7 @@ void filePick()
         temp = new nodeData;
         Treeroot->child.append(temp);
         parseElement(temp,child);
+        temp->parent = Treeroot;
         child = child.nextSiblingElement();
     }
 }
