@@ -3,6 +3,7 @@
 #include "header.h"
 #include <QMainWindow>
 
+//Main class
 class Watcher : public QMainWindow
 {
     Q_OBJECT
@@ -20,11 +21,15 @@ private:
     nodeData* currentRoot;
 
 public slots:
+    //uses for updating the scene
     void updateWatcher(nodeData* root);
+    //uses for updating Status mode, calls updateWatcher
     void updateStatus();
+    //uses for back button, calls updateWatcher
     void updateBack();
 };
 
+//EXTERN VARIABLE Treeroot saves the address of dta tree root
 extern nodeData* Treeroot;
 
 #endif // WATCHER_H

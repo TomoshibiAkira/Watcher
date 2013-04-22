@@ -9,9 +9,14 @@
 class nodeData
 {
 public:
+    //data recieved from XML
     int posX,posY,ID,value;
     QString picPath,name;
+
+    //child nodes
     QList<nodeData*> child;
+
+    //parent node
     nodeData* parent;
 };
 

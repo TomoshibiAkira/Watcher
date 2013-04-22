@@ -4,6 +4,7 @@ nodeData* Treeroot;
 QFile file, fileXML;
 QDomDocument doc;
 
+//file opening function
 bool readFile(QString fileName)
 {
     if (!file.open(QFile::ReadOnly | QFile::Text))
@@ -17,8 +18,10 @@ bool readFile(QString fileName)
     return true;
 }
 
+//parsing Element to build tree
 void parseElement(nodeData* root,const QDomElement &element)
 {
+    //data reading
     nodeData* temp = NULL;
     root->name = element.tagName();
     root->ID = element.attribute("id").toInt();
@@ -28,6 +31,8 @@ void parseElement(nodeData* root,const QDomElement &element)
     root->posX = x.text().toInt();
     root->posY = y.text().toInt();
     QDomElement child = element.firstChildElement().nextSiblingElement();
+
+    //building children or reading VALUE(only for SENSOR)
     if (child.tagName() == "VALUE")
     {
         root->value = child.text().toInt();
@@ -42,6 +47,9 @@ void parseElement(nodeData* root,const QDomElement &element)
             temp->parent = root;
             child = child.nextSiblingElement();
         }
+
+        //caculating VALUE for non-leaf nodes
+        //Uses simple adding for now
         int sum = 0;
         for (int i = 0; i < root->child.count(); i++)
             sum += root->child[i]->value;
@@ -104,12 +112,14 @@ void filePick()
         return;
     }
 
-    // Building the tree
+    //building Treeroot
     QDomElement node = doc.documentElement();
     nodeData* temp = NULL;
     Treeroot = new nodeData;
     Treeroot->name = node.tagName();
     QDomElement child = node.firstChildElement();
+
+    //parsing child elements (if there is)
     while (!child.isNull())
     {
         temp = new nodeData;

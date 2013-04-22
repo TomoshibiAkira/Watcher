@@ -3,6 +3,7 @@
 Watcher::Watcher(QWidget *parent)
     : QMainWindow(parent)
 {
+    //UI Settings
     QVBoxLayout* layout = new QVBoxLayout;
     QHBoxLayout* buttonLayout = new QHBoxLayout;
 
@@ -21,6 +22,7 @@ Watcher::Watcher(QWidget *parent)
 
     rawValue->setChecked(true);
 
+    //GraphicView setting
     View = new QGraphicsView(this);
     View->setScene(NULL);
     View->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -35,6 +37,7 @@ Watcher::Watcher(QWidget *parent)
 
     updateWatcher(Treeroot);
 
+    //SIGNAL | SLOT setting
     connect (rawValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
     connect (colorValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
     connect (percentValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
@@ -44,61 +47,74 @@ Watcher::Watcher(QWidget *parent)
 
 void Watcher::updateBack()
 {
+    //pressing back button
     updateWatcher(currentRoot->parent);
 }
 
 void Watcher::updateStatus()
 {
+    //changing status view mode
     updateWatcher(currentRoot);
 }
 
 void Watcher::updateWatcher(nodeData* root)
 {
+    //setting current root
     currentRoot = root;
+    //back button enable (or not) setting
     if (currentRoot == Treeroot) backButton->setEnabled(false);
             else backButton->setEnabled(true);
 
-    QGraphicsScene* scene;
-    if (View->scene() != NULL)
-    {
-        scene = View->scene();
-        View->setScene(NULL);
-    }
-    scene = new QGraphicsScene;
+    //setting new scene
+    QGraphicsScene* scene = new QGraphicsScene;
+
+    //setting background picture
     QString fileName = root->name.toLower();
     fileName.append("_back.png");
     View->setBackgroundBrush(QPixmap(fileName));
 
+    //setting item and status
     QList<nodeData*> childs = root->child;
     qreal posX, posY;
     for (int i = 0; i < childs.count(); i++)
     {
+        //setting item
         Item *newChild = new Item(QPixmap(childs[i]->picPath), childs[i]);
 
+        //setting status
         QGraphicsItem *statusAddress;
         if (rawValue->isChecked())
         {
+            //RAW mode, which means showing value from XML directly
             QGraphicsSimpleTextItem* status =
                     new QGraphicsSimpleTextItem(QString::number(childs[i]->value));
             QFont font = status->font();
             font.setPointSize(10);
             status->setFont(font);
             statusAddress = status;
+
+            //minor position changing
             posX = newChild->height / 2 + childs[i]->posX;
             posY = newChild->width / 2 + childs[i]->posY;
         }
         else if (colorValue->isChecked())
         {
+            //Color mode, uses green circle to represent working status
+            //Fixed on green for now
             QGraphicsEllipseItem* status = new QGraphicsEllipseItem;
             QBrush brush(Qt::green);
             status->setBrush(brush);
             status->setRect(-5, -5, 10, 10);
             statusAddress = status;
+
+            //minor position changing
             posX = newChild->height / 2 + childs[i]->posX + 2;
             posY = newChild->width / 2 + childs[i]->posY + 2;
         }
         else if (percentValue->isChecked())
         {
+            //Percent mode, uses percent value to represent working status
+            //Fixed on 80% for now
             QGraphicsTextItem* status =
                     new QGraphicsTextItem("80%");
             QFont font = status->font();
@@ -107,6 +123,8 @@ void Watcher::updateWatcher(nodeData* root)
             status->setDefaultTextColor(Qt::cyan);
             status->setEnabled(false);
             statusAddress = status;
+
+            //minor position changing
             posX = newChild->height / 2 + childs[i]->posX - 3;
             posY = newChild->width / 2 + childs[i]->posY - 6;
         }
@@ -114,10 +132,13 @@ void Watcher::updateWatcher(nodeData* root)
 
         scene->addItem(newChild);
         scene->addItem(statusAddress);
+
+        //no event handler setting for the basic SENSOR
         if (childs[i]->name != "SENSOR")
             connect(newChild,SIGNAL(updateSignal(nodeData*)),this,SLOT(updateWatcher(nodeData*)));
     }
 
+    //init scene
     View->setScene(scene);
 }
 
