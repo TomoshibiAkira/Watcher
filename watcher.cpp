@@ -1,5 +1,6 @@
 #include "watcher.h"
 #include "Item.h"
+#include "graphic.h"
 Watcher::Watcher(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -133,13 +134,21 @@ void Watcher::updateWatcher(nodeData* root)
         scene->addItem(newChild);
         scene->addItem(statusAddress);
 
-        //no event handler setting for the basic SENSOR
+        //event handler setting
         if (childs[i]->name != "SENSOR")
             connect(newChild,SIGNAL(updateSignal(nodeData*)),this,SLOT(updateWatcher(nodeData*)));
+        else
+            connect(newChild,SIGNAL(updateSignal(nodeData*)),this,SLOT(realtimeStart(nodeData*)));
     }
 
     //init scene
     View->setScene(scene);
+}
+
+void Watcher::realtimeStart(nodeData* root)
+{
+    graphic *graph = new graphic(root->ID, NULL);
+    graph->show();
 }
 
 Watcher::~Watcher()

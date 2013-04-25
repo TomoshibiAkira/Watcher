@@ -27,6 +27,8 @@ public slots:
     void updateStatus();
     //uses for back button, calls updateWatcher
     void updateBack();
+    //uses for opening realtime watcher
+    void realtimeStart(nodeData*);
 };
 
 //EXTERN VARIABLE Treeroot saves the address of dta tree root

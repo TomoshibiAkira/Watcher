@@ -15,8 +15,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         watcher.cpp \
     header.cpp \
-    Item.cpp
+    Item.cpp \
+    graphic.cpp \
+    graphicView.cpp
 
 HEADERS  += watcher.h \
     header.h \
-    Item.h
+    Item.h \
+    graphic.h \
+    graphicView.h
