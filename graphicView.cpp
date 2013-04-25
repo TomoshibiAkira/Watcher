@@ -16,6 +16,12 @@ void graphicView::dataInput(qreal Data)
     emit pointOver();
 }
 
+void graphicView::dataClear()
+{
+    DataList.clear();
+    emit pointOver();
+}
+
 void graphicView::paintEvent(QPaintEvent *)
 {
         QPainter painter(this);

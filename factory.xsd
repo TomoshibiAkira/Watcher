@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:complexType name="AXISDATA">
+	<xs:sequence>
+		<xs:element name="x" type="xs:integer"/>
+		<xs:element name="y" type="xs:integer"/>
+	</xs:sequence>
+	</xs:complexType>
+	<xs:element name="FACTORY">
+		<xs:complexType>
+		<xs:sequence>
+			<xs:element name="WORKSHOP">
+				<xs:complexType>
+				<xs:sequence>
+					<xs:element name="axis" type="AXISDATA" minOccurs="1" maxOccurs="1"/>
+					<xs:element name="PIPELINE" maxOccurs="unbounded">
+						<xs:complexType>
+						<xs:sequence>
+							<xs:element name="axis" type="AXISDATA" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="DEVICE" maxOccurs="unbounded">
+								<xs:complexType>
+								<xs:sequence>
+									<xs:element name="axis" type="AXISDATA" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="SENSOR" maxOccurs="unbounded">
+										<xs:complexType>
+										<xs:sequence>
+											<xs:element name="axis" type="AXISDATA" minOccurs="1" maxOccurs="1"/>
+											<xs:element name="VALUE" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+										</xs:sequence>
+										<xs:attribute name="id" type="xs:integer" use="required"/>
+                                        <xs:attribute name="pic" type="xs:string" use="required"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="id" type="xs:integer" use="required"/>
+                                <xs:attribute name="pic" type="xs:string" use="required"/>
+								</xs:complexType>
+								<xs:unique name="sensorAXIS">
+									<xs:selector xpath="./SENSOR/axis"/>
+									<xs:field xpath="x"/>
+									<xs:field xpath="y"/>
+								</xs:unique>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="id" type="xs:integer" use="required"/>
+                        <xs:attribute name="pic" type="xs:string" use="required"/>
+						</xs:complexType>
+						<xs:unique name="deviceAXIS">
+							<xs:selector xpath="./DEVICE/axis"/>
+							<xs:field xpath="x"/>
+							<xs:field xpath="y"/>
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:integer" use="required"/>
+                <xs:attribute name="pic" type="xs:string" use="required"/>
+				</xs:complexType>
+				<xs:unique name="pipelineAXIS">
+					<xs:selector xpath="./PIPELINE/axis"/>
+					<xs:field xpath="x"/>
+					<xs:field xpath="y"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="workshopID">
+			<xs:selector xpath="WORKSHOP"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+		<xs:unique name="pipelineID">
+			<xs:selector xpath="WORKSHOP/PIPELINE"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+		<xs:unique name="deviceID">
+			<xs:selector xpath="WORKSHOP/PIPELINE/DEVICE"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+		<xs:unique name="sensorID">
+			<xs:selector xpath="WORKSHOP/PIPELINE/DEVICE/SENSOR"/>
+			<xs:field xpath="@id"/>
+		</xs:unique>
+		<xs:unique name="workshopAXIS">
+			<xs:selector xpath="./WORKSHOP/axis"/>
+			<xs:field xpath="x"/>
+			<xs:field xpath="y"/>
+		</xs:unique>
+	</xs:element>
+</xs:schema>

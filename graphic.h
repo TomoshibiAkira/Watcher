@@ -15,6 +15,7 @@ private:
 
 signals:
     void dataToGraphic(qreal);
+    void clearDataList();
 
 public slots:
     void readData();

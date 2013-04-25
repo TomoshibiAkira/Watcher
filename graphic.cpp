@@ -24,6 +24,7 @@ graphic::graphic(int idNo, QWidget *parent) :
     connect(this,SIGNAL(dataToGraphic(qreal)),
             graph,SLOT(dataInput(qreal)));
     connect(timer,SIGNAL(timeout()),this,SLOT(readData()));
+    connect(this,SIGNAL(clearDataList()),graph,SLOT(dataClear()));
     timer->start(1000);
 
     this->resize(600,300);
@@ -37,6 +38,7 @@ void graphic::readData()
     if (!sharedMemory.attach()) {
         status->setText(tr(("Unable to attach to shared memory segment. " \
                                    "Run WatchServer first.")));
+        emit clearDataList();
         return;
     }
 

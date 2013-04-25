@@ -15,6 +15,7 @@ public:
 
 public slots:
     void dataInput(qreal);
+    void dataClear();
 
 signals:
     void pointOver();
