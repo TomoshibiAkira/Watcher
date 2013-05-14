@@ -8,6 +8,7 @@ graphic::graphic(int idNo, QWidget *parent) :
     QWidget(parent), sharedMemory("WatchServer")
 {
     ID = idNo;
+    this->setWindowTitle(QString("SENSOR %1").arg(ID));
     graphicView *graph = new graphicView(this);
     QVBoxLayout *layout = new QVBoxLayout;
     status = new QLabel(this);

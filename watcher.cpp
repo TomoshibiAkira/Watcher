@@ -1,35 +1,52 @@
 #include "watcher.h"
 #include "Item.h"
 #include "graphic.h"
+#include "Navigator.h"
 Watcher::Watcher(QWidget *parent)
     : QMainWindow(parent)
 {
     //UI Settings
-    QVBoxLayout* layout = new QVBoxLayout;
-    QHBoxLayout* buttonLayout = new QHBoxLayout;
 
-    rawValue = new QRadioButton("RAW",this);
-    colorValue = new QRadioButton("Color",this);
-    percentValue = new QRadioButton("Percent",this);
-    backButton = new QPushButton("Back",this);
+    //"Option" Menu
+    showOption = new QMenu("&Option");
+    colorValue = new QAction("By &Color",this);
+    colorValue->setCheckable(true);
+    percentValue = new QAction("By &Percent",this);
+    percentValue->setCheckable(true);
+    rawValue = new QAction("&RAW Value",this);
+    rawValue->setCheckable(true);
 
-    buttonLayout->addWidget(rawValue);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(colorValue);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(percentValue);
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(backButton);
-
+    QActionGroup* showActions = new QActionGroup(this);
+    showActions->addAction(colorValue);
+    showActions->addAction(percentValue);
+    showActions->addAction(rawValue);
     rawValue->setChecked(true);
+    showOption->addActions(showActions->actions());
+
+    //"About" Menu
+    about = new QMenu("&About");
+    aboutQt = new QAction("About &Qt...",this);
+    QAction* EXIT = new QAction("&Exit",this);
+    about->addAction(aboutQt);
+
+    //"Exit" Button, add to main menu
+    this->menuBar()->addMenu(showOption);
+    this->menuBar()->addMenu(about);
+    this->menuBar()->addAction(EXIT);
+
+    //create navigation bar
+    toolBar = new QToolBar;
+    this->addToolBar(toolBar);
+    toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    QVBoxLayout* layout = new QVBoxLayout;
 
     //GraphicView setting
-    View = new QGraphicsView(this);
+    View = new QGraphicsView;
     View->setScene(NULL);
     View->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 
     layout->addWidget(View);
-    layout->addLayout(buttonLayout);
 
     QWidget* cWidget = new QWidget;
     cWidget->setLayout(layout);
@@ -39,17 +56,12 @@ Watcher::Watcher(QWidget *parent)
     updateWatcher(Treeroot);
 
     //SIGNAL | SLOT setting
-    connect (rawValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
-    connect (colorValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
-    connect (percentValue,SIGNAL(clicked()),this,SLOT(updateStatus()));
-    connect (backButton,SIGNAL(clicked()),this,SLOT(updateBack()));
+    connect (rawValue,SIGNAL(triggered()),this,SLOT(updateStatus()));
+    connect (colorValue,SIGNAL(triggered()),this,SLOT(updateStatus()));
+    connect (percentValue,SIGNAL(triggered()),this,SLOT(updateStatus()));
+    connect (aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
+    connect (EXIT,SIGNAL(triggered()),this,SLOT(close()));
 
-}
-
-void Watcher::updateBack()
-{
-    //pressing back button
-    updateWatcher(currentRoot->parent);
 }
 
 void Watcher::updateStatus()
@@ -58,13 +70,50 @@ void Watcher::updateStatus()
     updateWatcher(currentRoot);
 }
 
+void Watcher::updateToolBar(nodeData* root)
+{
+    // search for current node, if there's no such node, add it into stackList
+    int i = stackList.indexOf(root);
+    if (i != -1)
+        while (stackList.size() != i+1) stackList.removeLast();
+    else
+        stackList.append(root);
+
+    // reset navigation bar
+    toolBar->clear();
+    // reset window title
+    QString title = "Watch System - FACTORY", nodetitle = "FACTORY";
+
+    /* nodetitle represents the text of this button
+     * stackList[0] represents the node address this button corresponds
+     * third parameter for QAction constructor, usually "this" */
+
+    // create FACTORY button
+    Navigator* node = new Navigator(nodetitle, stackList[0], this);
+    toolBar->addAction(node);
+    connect (node,SIGNAL(updateSignal(nodeData*)),this,SLOT(updateWatcher(nodeData*)));
+
+    // create other buttons
+    for (i = 1; i < stackList.size(); i++)
+    {
+        nodetitle = QString("%1 %2").arg(stackList[i]->name).arg(stackList[i]->ID);
+        title += " > " + nodetitle;
+        Navigator* node = new Navigator(nodetitle,stackList[i],this);
+        toolBar->addAction(node);
+        connect (node,SIGNAL(updateSignal(nodeData*)),this,SLOT(updateWatcher(nodeData*)));
+    }
+
+    // setting window title
+    this->setWindowTitle(title);
+}
+
 void Watcher::updateWatcher(nodeData* root)
 {
+    //update the navigation bar and window title
+    updateToolBar(root);
+
     //setting current root
     currentRoot = root;
-    //back button enable (or not) setting
-    if (currentRoot == Treeroot) backButton->setEnabled(false);
-            else backButton->setEnabled(true);
 
     //setting new scene
     QGraphicsScene* scene = new QGraphicsScene;
@@ -147,6 +196,7 @@ void Watcher::updateWatcher(nodeData* root)
 
 void Watcher::realtimeStart(nodeData* root)
 {
+    //open the graphic window to start capturing real time data
     graphic *graph = new graphic(root->ID, NULL);
     graph->show();
 }

@@ -17,10 +17,14 @@ SOURCES += main.cpp\
     header.cpp \
     Item.cpp \
     graphic.cpp \
-    graphicView.cpp
+    graphicView.cpp \
+    Navigator.cpp
 
 HEADERS  += watcher.h \
     header.h \
     Item.h \
     graphic.h \
-    graphicView.h
+    graphicView.h \
+    Navigator.h
+
+FORMS +=

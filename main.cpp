@@ -8,8 +8,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    //picking file and bulid tree
-    filePick();
+    //picking file and bulid tree, if there's an error then quit.
+    if (!filePick())
+        return 0;
 
     Watcher w;
     w.show();

@@ -13,20 +13,24 @@ public:
     ~Watcher();
 
 private:
+    QMenuBar *mainMenu;
+    QToolBar *toolBar;
+    QMenu* showOption,*about;
     QGraphicsView* View;
-    QRadioButton* rawValue;
-    QRadioButton* colorValue;
-    QRadioButton* percentValue;
-    QPushButton* backButton;
+    QAction* rawValue, *colorValue, *percentValue;
+    QAction* aboutQt;
     nodeData* currentRoot;
+    QList<nodeData*> stackList;     //saves nodes that user had clicked
+
+private:
+    //uses for updating navigation bar and the window title
+    void updateToolBar(nodeData* root);
 
 public slots:
     //uses for updating the scene
     void updateWatcher(nodeData* root);
     //uses for updating Status mode, calls updateWatcher
     void updateStatus();
-    //uses for back button, calls updateWatcher
-    void updateBack();
     //uses for opening realtime watcher
     void realtimeStart(nodeData*);
 };

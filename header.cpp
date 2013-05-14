@@ -57,16 +57,11 @@ void parseElement(nodeData* root,const QDomElement &element)
     }
 }
 
-void filePick()
+bool filePick()
 {
     //Read XSD
-    QString fileName =
-            QFileDialog::getOpenFileName(NULL, QWidget::tr("Open XSD Files"),
-                                         QDir::currentPath(),
-                                         QWidget::tr("XSD Files (*.xsd)"));
-    if (fileName.isEmpty()) return;
-    file.setFileName(fileName);
-    if (!readFile(fileName)) return;
+    file.setFileName("FACTORY.XSD");
+    if (!readFile(file.fileName())) return false;
 
     QXmlSchema schema;
     schema.load(&file);
@@ -74,18 +69,13 @@ void filePick()
     {
         QMessageBox::information(NULL, QWidget::tr("XSDRead")
                                  ,QWidget::tr("This is not a valid XSD File!"));
+        return false;
     }
 
     file.close();
 
-    //Read XML
-    fileName =
-            QFileDialog::getOpenFileName(NULL, QWidget::tr("Open XML Files"),
-                                         QDir::currentPath(),
-                                         QWidget::tr("XML Files (*.xml)"));
-    if (fileName.isEmpty()) return;
-    file.setFileName(fileName);
-    if (!readFile(fileName)) return;
+    file.setFileName("FACTORY.XML");
+    if (!readFile(file.fileName())) return false;
 
     //DOM Read-In
     QString errorStr;
@@ -97,7 +87,7 @@ void filePick()
                                  .arg(errorLine)
                                  .arg(errorColumn)
                                  .arg(errorStr));
-        return;
+        return false;
     }
 
     //Reset the file pointer
@@ -109,7 +99,7 @@ void filePick()
     {
         QMessageBox::information(NULL,QWidget::tr("XSDRead"),
                                  QWidget::tr("This is not a valid XML File!"));
-        return;
+        return false;
     }
 
     //building Treeroot
@@ -128,4 +118,6 @@ void filePick()
         temp->parent = Treeroot;
         child = child.nextSiblingElement();
     }
+
+    return true;
 }
